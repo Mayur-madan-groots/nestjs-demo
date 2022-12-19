@@ -42,8 +42,8 @@ sleep 1m  #wait to get install all application mention inside userdata
 
 
 #printing ip,id and port
-echo -e "\033[0;31m'printing instance id,public ip and allowed port"
-aws ec2 describe-instances  --filters Name=tag:Name,Values=$instancename   --query 'Reservations[*].Instances[*].{id:InstanceId,publicip:PublicIpAddress}'  --output table &&  aws ec2 describe-security-groups     --group-ids $sgid  --query "SecurityGroups[].IpPermissions[].{rule1:FromPort,rule2:ToPort}"   --output table
+#echo -e "\033[0;31m'printing instance id,public ip and allowed port"
+#aws ec2 describe-instances  --filters Name=tag:Name,Values=$instancename   --query 'Reservations[*].Instances[*].{id:InstanceId,publicip:PublicIpAddress}'  --output table &&  aws ec2 describe-security-groups     --group-ids $sgid  --query "SecurityGroups[].IpPermissions[].{rule1:FromPort,rule2:ToPort}"   --output table
 
 
 
@@ -64,22 +64,33 @@ docker build -t nest-cloud-run:latest .
 
 echo "ip replecement for DB-done"
 
-#push dockerfile to remote 
+#push aplication image to remote 
 echo "pushing application image"
-docker save nest-cloud-run:latest | bzip2 | pv | ssh alchemy docker load
+sudo docker save nest-cloud-run:latest | bzip2 | pv | ssh test docker load
 echo "image pushed"
 
 echo "conatiner deplyment started"
 # container deployment 
 ssh -o StrictHostKeyChecking=no test sudo docker images nest-cloud-run:latest  
-scp -o StrictHostKeyChecking=no test sudo docker stop nest-cloud-run 
+ssh -o StrictHostKeyChecking=no test sudo docker stop nest-cloud-run 
 ssh -o StrictHostKeyChecking=no test sudo docker rm -f nest-cloud-run  
 ssh -o StrictHostKeyChecking=no test sudo docker run -itd -p 8080:8080 --name nest-cloud run nest-cloud-run:latest
-ssh -o StrictHostKeyChecking=no test sleep 60 
+ssh -o StrictHostKeyChecking=no test sleep 60s
 ssh -o StrictHostKeyChecking=no test sudo docker logs nest-cloud-run 
 
 echo "conatiner deployment done"
-echo "we can access it using $PIP:8080"
+
+
+#printing ip,id and port
+echo -e "\033[0;31m'printing instance id,public ip and allowed port"
+aws ec2 describe-instances  --filters Name=tag:Name,Values=$instancename   --query 'Reservations[*].Instances[*].{id:InstanceId,publicip:PublicIpAddress}'  --output table &&  aws ec2 describe-security-groups     --group-ids $sgid  --query "SecurityGroups[].IpPermissions[].{rule1:FromPort,rule2:ToPort}"   --output table
+
+
+#retriving the public ip of newly created ec2
+pubip=`aws ec2 describe-instances  --query "Reservations[].Instances[].PrivateIpAddress" --filters "Name=tag:Name,Values=$instancename" | sed -n 2p | tr -d \"`
+
+echo "we can access it using $pubip:8080"
+
 
 echo "termination start"
 
