@@ -106,7 +106,7 @@ echo "we can access it using $pubip:8080"
 
 #termination using crontab
 
-CRON="18 16 * * *"
+CRON="38 16 * * *"
 
 COMMANDS="aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli" --output text) && aws ec2 delete-security-group --group-name alchemySG-cli"
 
