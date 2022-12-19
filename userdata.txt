@@ -1,0 +1,5 @@
+#!/bin/bash
+sudo apt update -y
+sudo apt-get install docker.io -y
+sudo docker run -itd --name postgresdb -p 5432:5432 -e "POSTGRES_PASSWORD=123456" -e "POSTGRES_DB=user-calender" postgres:14.4
+
