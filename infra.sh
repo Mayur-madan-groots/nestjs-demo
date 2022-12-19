@@ -14,7 +14,7 @@ fi
 vpc_id=vpc-e332298b
 subnet_id=subnet-d85f5fb0
 ami_id=ami-07ffb2f4d65357b42
-instancename=cli-test3
+instancename=cli-test4
 sgname=alchemy-sgroupdvpc1
 
 
@@ -40,13 +40,6 @@ echo "will take about 1 min to launch"
 sleep 1m  #wait to get install all application mention inside userdata
 
 
-
-#printing ip,id and port
-#echo -e "\033[0;31m'printing instance id,public ip and allowed port"
-#aws ec2 describe-instances  --filters Name=tag:Name,Values=$instancename   --query 'Reservations[*].Instances[*].{id:InstanceId,publicip:PublicIpAddress}'  --output table &&  aws ec2 describe-security-groups     --group-ids $sgid  --query "SecurityGroups[].IpPermissions[].{rule1:FromPort,rule2:ToPort}"   --output table
-
-
-
 #retriving the private ip of newly created ec2
 PIP=`aws ec2 describe-instances  --query "Reservations[].Instances[].PrivateIpAddress" --filters "Name=tag:Name,Values=$instancename" | sed -n 2p | tr -d \"`
 
@@ -59,13 +52,16 @@ echo "ip replacement done"
 
 #replacing ip in source code .env file to access database with new infra 
 sed -i "s/DATABASE_HOST=localhost/DATABASE_HOST=$PIP/g" src/common/envs/development.env 
-#build dockerfile 
-docker build -t nest-cloud-run:latest .
 
+
+#build dockerfile 
+echo "building dockerfile"
+docker build -t nest-cloud-run:latest .
 echo "ip replecement for DB-done"
 
 #push aplication image to remote 
 echo "pushing application image"
+ssh -o StrictHostKeyChecking=no test sudo chmod 666 /var/run/docker.sock
 sudo docker save nest-cloud-run:latest | bzip2 | pv | ssh test docker load
 echo "image pushed"
 
