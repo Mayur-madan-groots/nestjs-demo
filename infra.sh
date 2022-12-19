@@ -14,7 +14,7 @@ fi
 vpc_id=vpc-e332298b
 subnet_id=subnet-d85f5fb0
 ami_id=ami-07ffb2f4d65357b42
-instancename=alchemy-cli
+instancename=alchemy-cli2
 sgname=alchemySG-cli
 
 
@@ -106,12 +106,14 @@ echo "we can access it using $pubip:8080"
 
 #termination using crontab
 
-CRON="38 16 * * *"
+CRON="55 16 * * *"
 
-COMMANDS="aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli" --output text) && aws ec2 delete-security-group --group-name alchemySG-cli"
+COMMANDS="aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli2" --output text)"  
+	
+#aws ec2 delete-security-group --group-name alchemySG-cli
 
 ID=id=`aws ec2 describe-instances  --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:Name,Values=alchemy-cli" | sed -n 2p | tr -d \"`
 
-echo "$CRON $COMMANDS" | sudo tee  /etc/cron.d/$ID@termination
+echo "$CRON $COMMANDS" | sudo tee  /etc/cron.d/ec2_termination
 echo "Cron job created. Remove /etc/cron.d/$ID@termination to stop it"
 
