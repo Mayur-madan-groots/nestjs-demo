@@ -65,13 +65,14 @@ ssh -o StrictHostKeyChecking=no test sudo chmod 666 /var/run/docker.sock
 sudo docker save nest-cloud-run:latest | bzip2 | pv | ssh test docker load
 echo "image pushed"
 
-echo "conatiner deplyment started"
+echo "container deplyment started"
 # container deployment  
-ssh -o StrictHostKeyChecking=no test sudo docker run -itd -p 8080:3000 --name=app-container  nest-cloud-run
-ssh -o StrictHostKeyChecking=no test sleep 1m
+ssh -o StrictHostKeyChecking=no test sudo docker run -itd -p 8080:3000 --name=app-container  nest-cloud-run >  /dev/null 2>&1
+echo "container deployment done"
+echo "wait for 1 min to get container log"
+ssh -o StrictHostKeyChecking=no test sleep 1m 
 ssh -o StrictHostKeyChecking=no test sudo docker logs app-container 
 
-echo "conatiner deployment done"
 
 
 #printing ip,id and port
@@ -80,7 +81,7 @@ aws ec2 describe-instances  --filters Name=tag:Name,Values=$instancename   --que
 
 
 #retriving the public ip of newly created ec2
-pubip=`aws ec2 describe-instances  --query "Reservations[].Instances[].PrivateIpAddress" --filters "Name=tag:Name,Values=$instancename" | sed -n 2p | tr -d \"`
+pubip=`aws ec2 describe-instances  --query "Reservations[].Instances[].PublicIpAddress" --filters "Name=tag:Name,Values=$instancename" | sed -n 2p | tr -d \"`
 
 echo "we can access it using $pubip:8080"
 
