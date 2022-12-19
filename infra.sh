@@ -14,7 +14,7 @@ fi
 vpc_id=vpc-e332298b
 subnet_id=subnet-d85f5fb0
 ami_id=ami-07ffb2f4d65357b42
-instancename=cli-test5
+instancename=cli-test6
 sgname=alchemy-sgroupdvpc1
 
 
@@ -67,9 +67,9 @@ echo "image pushed"
 
 echo "conatiner deplyment started"
 # container deployment  
-ssh -o StrictHostKeyChecking=no test sudo docker run -itd -p 8080:3000 --name nest-cloud run nest-cloud-run:latest
+ssh -o StrictHostKeyChecking=no test sudo docker run -itd -p 8080:3000 --name=app-container  nest-cloud-run
 ssh -o StrictHostKeyChecking=no test sleep 1m
-ssh -o StrictHostKeyChecking=no test sudo docker logs nest-cloud-run 
+ssh -o StrictHostKeyChecking=no test sudo docker logs app-container 
 
 echo "conatiner deployment done"
 
