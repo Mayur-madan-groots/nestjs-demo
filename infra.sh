@@ -14,7 +14,7 @@ fi
 vpc_id=vpc-e332298b
 subnet_id=subnet-d85f5fb0
 ami_id=ami-07ffb2f4d65357b42
-instancename=alchemy-demo
+instancename=alchemy-demo1
 sgname=alchemySG-cli
 
 
@@ -106,7 +106,7 @@ echo "we can access it using $pubip:8080"
 
 #termination using crontab
 
-CRON="40 18 * * *"
+CRON="12 19 * * *"
 
 #COMMANDS="aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli2" --output text)"  
 
