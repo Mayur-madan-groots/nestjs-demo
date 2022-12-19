@@ -14,7 +14,7 @@ fi
 vpc_id=vpc-e332298b
 subnet_id=subnet-d85f5fb0
 ami_id=ami-07ffb2f4d65357b42
-instancename=alchemy-cli3
+instancename=alchemy-cli
 sgname=alchemySG-cli
 
 
@@ -106,14 +106,16 @@ echo "we can access it using $pubip:8080"
 
 #termination using crontab
 
-#CRON="55 16 * * *"
+CRON="55 17 * * *"
 
-#COMMANDS="aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli2" --output text)"  
-	
+COMMANDS="aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli2" --output text)"  
+USER="jenkins"
+CRON_FILE="ec2-termination"
 #aws ec2 delete-security-group --group-name alchemySG-cli
+ID=id=`aws ec2 describe-instances  --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:Name,Values=alchemy-cli" | sed -n 2p | tr -d \"`
 
-#ID=id=`aws ec2 describe-instances  --query "Reservations[].Instances[].InstanceId" --filters "Name=tag:Name,Values=alchemy-cli" | sed -n 2p | tr -d \"`
+echo "$CRON $USER $COMMAND" | sudo tee /etc/cron.d/$CRON_FILE
 
-sudo echo "37 17 * * * aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli3" --output text) --output text" > /etc/cron.d/ec2-termination
+#sudo echo "37 17 * * * aws ec2 terminate-instances --instance-ids $(aws ec2 describe-instances --query 'Reservations[].Instances[].InstanceId' --filters "Name=tag:Name,Values=alchemy-cli3" --output text) --output text" > /etc/cron.d/ec2-termination
 echo "Cron job created. Remove /etc/cron.d/ec2-termination to stop it"
 
