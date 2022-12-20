@@ -14,7 +14,7 @@ fi
 vpc_id=vpc-e332298b
 subnet_id=subnet-d85f5fb0
 ami_id=ami-07ffb2f4d65357b42
-instancename=alchemy-cli
+instancename=alchemy-POC
 sgname=alchemySG-cli
 
 
@@ -76,14 +76,14 @@ ssh -o StrictHostKeyChecking=no test sudo docker logs app-container
 
 
 #printing ip,id and port
-echo -e "\033[0;31m'printing instance id,public ip and allowed port"
-aws ec2 describe-instances  --filters Name=tag:Name,Values=$instancename   --query 'Reservations[*].Instances[*].{id:InstanceId,publicip:PublicIpAddress}'  --output table &&  aws ec2 describe-security-groups     --group-ids $sgid  --query "SecurityGroups[].IpPermissions[].{rule1:FromPort,rule2:ToPort}"   --output table
+#echo -e "\033[0;31m'printing instance id,public ip and allowed port"
+#aws ec2 describe-instances  --filters Name=tag:Name,Values=$instancename   --query 'Reservations[*].Instances[*].{id:InstanceId,publicip:PublicIpAddress}'  --output table &&  aws ec2 describe-security-groups     --group-ids $sgid  --query "SecurityGroups[].IpPermissions[].{rule1:FromPort,rule2:ToPort}"   --output table >  /dev/null 2>&1
 
 
 #retriving the public ip of newly created ec2
 pubip=`aws ec2 describe-instances  --query "Reservations[].Instances[].PublicIpAddress" --filters "Name=tag:Name,Values=$instancename" | sed -n 2p | tr -d \"`
 
-echo "we can access it using $pubip:8080"
+echo "we can access application using $pubip:8080"
 
 #echo "termination start"
 
